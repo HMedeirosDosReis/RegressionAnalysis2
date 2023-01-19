@@ -1,0 +1,414 @@
+---
+title: | 
+  | \vspace{-1.8cm} MATH 4780 (MSSC 5780) Homework 2
+date: |
+  | \vspace{-0.5cm} `r format(Sys.time(), '%B %d %Y')`
+output: 
+  pdf_document:
+    number_sections: true
+fontsize: 11pt
+geometry: margin=1in
+documentclass: article
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+issue_due_date <- format(seq.Date( Sys.Date(), length=2, by='7 days'),  '%B %d %Y')
+issue_due_date <- paste(issue_due_date, "11:59 PM")
+```
+
+\begin{center}
+\textbf{Due Date: September 23, 2022 11:59 PM}
+\textbf{Henrique Medeiros Dos Reis}
+\end{center}
+
+
+# Homework Instruction and Requirement
+- Homework 2 covers course materials of Week 1 to 4.
+
+- Please submit your work in **one** **PDF** file including all parts to **D2L > Assessments > Dropbox**. *Multiple files or a file that is not in pdf format are not allowed.*
+
+- In your homework, please number and answer questions **in order**. 
+
+- Your answers may be handwritten on the Mathematical Derivation and Reasoning part. However, you need to scan your paper and make it a PDF file. 
+
+- Your entire work on Statistical Computing and Data Analysis should be completed by any word processing software (Microsoft Word, Google Docs, [(R)Markdown](https://rmarkdown.rstudio.com/), [Quarto](https://quarto.org/), [LaTex](https://www.latex-project.org/), etc) and your preferred programming language. Your document should be a PDF file.
+
+- Questions starting with **(MSSC)** are for MSSC 5780 students. MATH 4780 students could possibly earn extra points from them.
+
+- It is your responsibility to let me understand what you try to show. If you type your answers, make sure there are no typos. I grade your work based on *what you show, not what you want to show*. If you choose to handwrite your answers, write them neatly. If I can’t read your sloppy handwriting, your answer is judged as wrong.
+
+
+# Mathematical Derivation and Reasoning
+
+## Simple Linear Regression
+
+The following questions are based on the population and sample linear regression model defined in our course slides and textbook.
+
+1. Find the least squares estimator $b_0$ and $b_1$ such that $$(b_0, b_1) = \arg\min_{\beta_0, \beta_1} \sum_{i=1}^n(y_i - \beta_0 - \beta_1x_i)^2.$$
+**Solution:**
+The LSE of $\beta_0$ and $\beta_1$ that minimizes the error, can obtained by taking derivatives and setting them equal to 0.
+$$\frac{\partial{SS_{res}}}{\partial \beta_0} =  \frac{\sum_{i=1}^n(y_i - \beta_0 - \beta_1x_i)^2}{\partial \beta_0} = 
+\sum_{i=1}^n 2(y_i -\beta_0 - \beta_1x_i)(-1) = 0$$
+$$
+\sum_{i=1}^n (y_i) -nb_0 - b_1\sum_{i=1}^nx_i = 0 
+$$
+Now, lets solve for $b_0$ given $b_1$
+
+$$
+\sum_{i=1}^n (y_i) -nb_0 - b_1\sum_{i=1}^nx_i = 0 \Rightarrow -nb_0 = b_1\sum_{i=1}^nx_i - \sum_{i=1}^n (y_i) =
+$$
+$$
+b_0 = \frac{-1}{n}(b_1\sum_{i=1}^nx_i + \sum_{i=1}^n (y_i)) = \bar{y} - b_1\bar{x}
+$$
+\quad\quad\ Now, let's take the derivative with respect to $\beta_1$
+
+$$\frac{\partial{SS_{res}}}{\partial \beta_1} =  \frac{\sum_{i=1}^n(y_i - \beta_0 - \beta_1x_i)^2}{\partial \beta_1} = 
+\sum_{i=1}^n 2(y_i -\beta_0 - \beta_1x_i)(-x_i) = 0$$
+$$
+-2\sum_{i=1}^n x_i(y_i -b_0 - b_1x_i) = 0 \Rightarrow \sum_{i=1}^n x_iy_i -b_0\sum_{i=1}^n x_i -b_1\sum_{i=1}^n x_i^2
+$$ 
+\quad\quad\ Now, lets solve for $b_1$ given $b_0$
+$$
+\sum_{i=1}^n x_iy_i  = b_0\sum_{i=1}^n x_i +b_1\sum_{i=1}^n x_i^2 \Rightarrow n\sum_{i=1}^n x_iy_i  = nb_0\sum_{i=1}^n x_i +nb_1\sum_{i=1}^n x_i^2 =0 
+$$
+\quad\quad\ Putting together the previous two equations we then have:
+$$
+b_1(n\sum_{i=1}^n x_i^2 - \sum_{i=1}^n x_i^2) = n\sum_{i=1}^n x_iy_i -\sum_{i=1}^n x_i\sum_{i=1}^n y_i \Rightarrow
+$$
+$$
+b_1 = \frac{
+n\sum_{i=1}^n x_iy_i - \frac{\sum_{i=1}^n x_i\sum_{i=1}^n y_i}{n}
+}
+{n\sum_{i=1}^n x_i^2 - 
+\frac{\sum_{i=1}^n x_i^2}{n}} = 
+\frac{\sum_{i=1}^n x_iy_i -\bar{x}\bar{y}}{\sum_{i=1}^n (x_i - \bar{x})^2} = \frac{\sum_{i=1}^n (x_i-\bar{x}) \sum_{i=1}^n(y_i -\bar{y})}{\sum_{i=1}^n (x_i - \bar{x})^2}
+$$
+\quad\quad\ Therefore the estimators $b_0$ and $b_1$ are:
+$$
+b_0 = \bar{y} - b_1\bar{x} \text{ and } b_1 = \frac{\sum_{i=1}^n (x_i-\bar{x}) \sum_{i=1}^n(y_i -\bar{y})}{\sum_{i=1}^n (x_i - \bar{x})^2}
+$$
+
+2. Show that $\hat{y}_i = \sum_{j=1}^n h_{ij}y_j$ where $h_{ij} = \frac{1}{n} + \frac{(x_i-\overline{x})(x_j-\overline{x})}{S_{xx}}$.
+
+\quad\quad\ **Solution: **
+$$
+\hat{y}_i = b_0 + b_1x_i \Rightarrow \hat{y}_i = \bar{y} - b_1\bar{x} + \frac{\sum_{j=1}^n (x_i-\bar{x}) \sum_{j=1}^n(y_i -\bar{y})}{\sum_{j=1}^n (x_i - \bar{x})^2}
+$$
+\quad\quad\ Since $S_{xx} = \sum_{i=1}^n (x_i - \bar{x})^2$ and $S_{xy} = \sum_{i=1}^n (x_i-\bar{x}) \sum_{i=1}^n(y_i -\bar{y}) = \sum_{i=1}^n (x_i-\bar{x})y_i$.
+$$
+\hat{y}_i = \bar{y} - b_1\bar{x} + \frac{\sum_{j=1}^n (x_i-\bar{x}) y_i}{S_{xx}}
+$$
+\quad\quad\ And $c_{i} = \frac{x_i- \bar{x}}{S_{xx}}$.
+$$
+\hat{y}_i = \bar{y} - b_1\bar{x} + x_i \sum_{j=1}^nc_jy_j \Rightarrow
+$$
+$$
+\hat{y}_i = \bar{y} -  \bar{x}\sum_{j=1}^nc_jy_j + x_i \sum_{j=1}^nc_jy_j = \frac{1}{n}\sum_{j=1}^ny_j - \bar{x}\sum_{j=1}^nc_jy_j + x_i \sum_{j=1}^nc_jy_j
+$$
+$$
+\hat{y}_i = \frac{1}{n}\sum_{j=1}^ny_j - \bar{x}\sum_{j=1}^nc_jy_j+ x_i\sum_{j=1}^nc_jy_j = \sum_{j=1}y_j(\frac{1}{n}-\bar{x}c_j +x_ic_j) \Rightarrow
+$$
+$$
+\hat{y}_i =  \sum_{j=1}y_j(\frac{1}{n}-\bar{x}\frac{x_j- \bar{x}}{S_{xx}} +x_i\frac{x_j- \bar{x}}{S_{xx}}) = \sum_{j=1}y_j(\frac{1}{n}+\frac{-\bar{x}x_j +\bar{x}^2 +x_ix_j -x_i\bar{x}}{S_{xx}} )
+$$
+$$ \sum_{j=1}y_j(\frac{1}{n} +\frac{(x_i- \bar{x})(x_j- \bar{x})}{S_{xx}})
+$$
+\quad\quad\ Therefore $\hat{y}_i = \sum_{j=1}^n y_jh_{ij}$
+
+3. Remember that before training sample is collected, $y_i$ are assumed random variables. Show that $b_0$ is an unbiased estimator for $\beta_0$, i.e., $E(b_0) = \beta_0$.
+
+\quad\quad\ **Solution:**
+
+$$
+\beta_0 = E[b_0] = E[\bar{y} - b_1\bar{x}] = E[\bar{y}] - E[b_1\bar{x}] \Rightarrow
+$$
+$$
+\beta_0 = E[\sum_{i=1}^n\frac{y_i}{n}] - E[b_1\bar{x}] = \frac{1}{n}\sum_{i=1}^nE[y_i] -\bar{x}E[b_1]
+$$
+\quad\quad\ Since $E[b_1] = \beta_1$ and $y_i = \beta_0 +\beta_1x_i + \epsilon_i$. Then:
+$$
+\beta_0 = \frac{1}{n}\sum_{i=1}^nE[ \beta_0 +\beta_1x_i + \epsilon_i] -\bar{x}\beta_1 =  \frac{1}{n}\sum_{i=1}^n(E[ \beta_0] +E[\beta_1x_i] +E[ \epsilon_i]) -\bar{x}\beta_1 \Rightarrow
+$$
+
+$$
+\beta_0 = \frac{1}{n}\sum_{i=1}^n(\beta_0 +\beta_1x_i ) -\bar{x}\beta_1 = \frac{1}{n}\sum_{i=1}^n\beta_0 +\frac{1}{n}\sum_{i=1}^n\beta_1x_i  -\bar{x}\beta_1 \Rightarrow
+$$
+$$
+\beta_0 = \frac{1}{n}n\beta_0 + \frac{\sum_{i=1}^n\beta_1x_i }{n}-\bar{x}\beta_1 = \beta_0 + \beta_1\frac{\sum_{i=1}^nx_i }{n} -\bar{x}\beta_1 = \beta_0 +\beta_1\bar{x}-\beta_1\bar{x}
+$$
+
+\quad\quad\ Therefore $E[b_0]=\beta_0$
+
+4. Show that $\sum_{i=1}^n(y_i - \overline{y})^2 = \sum_{i=1}^n(\hat{y}_i - \overline{y})^2 + \sum_{i=1}^n(y_i - \hat{y}_i)^2$, i.e., $SS_T = SS_R + SS_{res}$.
+
+\quad\quad\ **Solution:**
+$$
+\sum_{i=1}^n(y_i - \overline{y})^2 = \sum_{i=1}^n(y_i -\hat{y}_i  +\hat{y}_i - \overline{y})^2
+$$
+\quad\quad\ Now let $a = (y_i - \hat{y}_i)$ and $b = (\hat{y}_i - \overline{y})$ then $(a+b)^2 = a^2+2ab +b^2 \Rightarrow (y_i - \hat{y}_i)^2 +2(y_i - \hat{y}_i)(\hat{y}_i - \overline{y})+(\hat{y}_i - \overline{y})^2$. Then:
+$$
+SS_T = \sum_{i=1}^n(y_i - \hat{y}_i)^2 +2\sum_{i=1}^n(y_i - \hat{y}_i)(\hat{y}_i - \overline{y})+\sum_{i=1}^n(\hat{y}_i - \overline{y})^2 \Rightarrow
+$$
+$$
+SS_T = SS_{res} + 2\sum_{i=1}^n(y_i - \hat{y}_i)(\hat{y}_i - \overline{y}) +SS_R
+$$
+\quad\quad\ For this expression to be true, we need to prove that $2\sum_{i=1}^n(y_i - \hat{y}_i)(\hat{y}_i - \overline{y}) = 0$
+
+$$
+2\sum_{i=1}^n(y_i - \hat{y}_i)(\hat{y}_i - \overline{y}) = 0 = \sum_{i=1}^n(y_i - \hat{y}_i)(\hat{y}_i- \overline{y}) \Rightarrow
+$$
+$$
+\sum_{i=1}^n(y_i -(\beta_0 +\beta_1x_i))(\beta_0+\beta_1x_i-\bar{y}) = \sum_{i=1}^n(y_i -\hat{y} +\beta_1\bar{x} -\beta_1x_i)(\hat{y}-\beta_1\bar{x}+\beta_1x_i-\bar{y})
+$$
+$$
+\sum_{i=1}^n(y_i -\bar{y} -\beta_1(x_i - \bar{x}))(\beta_1(x_i-\bar{x})) 
+$$
+$$
+\sum_{i=1}^n\beta_1(x_i-\bar{x})(y_i-\bar{y}) - \beta_1^2(x_i-\bar{x}) = \beta_1\sum_{i=1}^n(x_i-\bar{x})(y_i-\bar{y})-\beta_1^2\sum_{i=1}^n(x_i-\bar{x})^2
+$$
+\quad\quad\ Where:
+$$\beta_1 = \frac{\sum_{i=1}^n (x_i-\bar{x}) \sum_{i=1}^n(y_i -\bar{y})}{\sum_{i=1}^n (x_i - \bar{x})^2} = \frac{\sum_{i=1}^n (x_i-\bar{x}) \sum_{i=1}^n(y_i -\bar{y})}{S_{xx}}$$
+\quad\quad\ Then: 
+$$
+\frac{(\sum_{i=1}^n(x_i-\bar{x})(y_i-\bar{y}))^2}{S_{xx}}-[\frac{\sum_{i=1}^n(x_i-\bar{x})(y_i-\bar{y})}{S_{xx}}]^2S_{xx}=0 \Rightarrow
+$$
+$$
+\frac{(\sum_{i=1}^n(x_i-\bar{x})(y_i-\bar{y}))^2}{S_{xx}}-\frac{(\sum_{i=1}^n(x_i-\bar{x})(y_i-\bar{y}))^2}{S_{xx}}=0
+$$
+\quad\quad\ Therefore $$\sum_{i=1}^n(y_i - \overline{y})^2 = \sum_{i=1}^n(\hat{y}_i - \overline{y})^2 + \sum_{i=1}^n(y_i - \hat{y}_i)^2$$
+
+5. **(MSSC)** Show that $SS_{res} = SS_T - b_1S_{xy}$, i.e., $SS_R = b_1S_{xy}$. This proof tells us that $SS_{res}$ is the variation with all variation explained by the association of $x$ and $y$ removed.
+\quad\quad\ **Solution:**
+$$
+SS_{res}=\sum_{i=1}^n(y_i-\hat{y}_i)^2,\ SS_T = \sum_{i=1}^n(y_i - \overline{y})^2, S_{xy}=\sum_{i=1}^n(x_i -\bar{x})(y_i -\bar{y}), b_1 = \frac{\sum_{i=1}^n (x_i-\bar{x}) \sum_{i=1}^n(y_i -\bar{y})}{\sum_{i=1}^n (x_i - \bar{x})^2}
+$$
+\quad\quad\ Then we can show:
+$$
+\sum_{i=1}^n(y_i-\hat{y}_i)^2 = \sum_{i=1}^n(y_i - \overline{y})^2 -(\frac{\sum_{i=1}^n (x_i-\bar{x}) \sum_{i=1}^n(y_i -\bar{y})}{\sum_{i=1}^n (x_i - \bar{x})^2})(\sum_{i=1}^n(x_i -\bar{x})(y_i -\bar{y}))
+$$
+$$
+\sum_{i=1}^n(y_i-\hat{y}_i)^2 = \sum_{i=1}^n(y_i - \overline{y})^2 -(\frac{ \sum_{i=1}^n(y_i -\bar{y})}{\sum_{i=1}^n (x_i - \bar{x})})(\sum_{i=1}^n(x_i -\bar{x})(y_i -\bar{y}))
+$$
+$$
+\sum_{i=1}^n(y_i-\hat{y}_i)^2 = \sum_{i=1}^n(y_i - \overline{y})^2 -\sum_{i=1}^n\frac{ (y_i -\bar{y})}{ (x_i - \bar{x})}(x_i -\bar{x})(y_i -\bar{y})
+$$
+$$
+\sum_{i=1}^n(y_i-\hat{y}_i)^2 = \sum_{i=1}^n(y_i - \overline{y})^2 -\sum_{i=1}^n (y_i -\bar{y})(y_i -\bar{y}) \Rightarrow
+$$
+$$
+\sum_{i=1}^n(y_i-\hat{y}_i)^2 = \sum_{i=1}^n(y_i - \overline{y})^2 -\sum_{i=1}^n (y_i -\bar{y})^2 \Rightarrow
+$$
+$$
+\sum_{i=1}^n(y_i-\hat{y}_i)^2 = 0 = SS_{res}
+$$
+\quad\quad\ And $\sum_{i=1}^n(y_i-\hat{y}_i)^2 = \sum_{i=1}^ne_i = 0$
+.
+6. **(MSSC)** Show that $E(MS_{res}) = \sigma^2$ and $E(MS_R) = \sigma^2 + \beta_1^2S_{xx}$. [*Hint:* Use the fact that a $\chi^2_{k}$ random variable has the mean value $k$.] This proof tells us that $MS_R$ is also an estimator for $\sigma^2$. Although it is usually biased, it is unbiased when $\beta_1 = 0$. Would $MS_R \ge MS_{res}$ always hold? Why or why not? Please explain.
+
+\quad\quad\ **Solution:**
+
+\quad\quad\ part 1 
+$$
+E(MS_{res}) = \sigma^2 \Rightarrow \sigma^2= \frac{SS_{Res}}{n-2}
+$$
+$$
+E(MS_{res})  =E[ \frac{\sum_{i=1}^n(y_i - \hat{y}_i)^2}{n-2}] = \frac{1}{n-2}E[\sum_{i=1}^n(y_i - \hat{y}_i)^2] \Rightarrow
+$$
+$$
+\frac{1}{n-2}E[SS_{res}] = \frac{1}{n-2}((n-2)\sigma^2) = 
+\sigma^2
+$$
+\quad\quad\ part 2
+$$
+E(MS_R) =E[\frac{SS_r}{1}] = E[b_1^2S_{xx}] = S_{xx}E[b_1^2]\Rightarrow
+$$
+$$
+S_{xx}[Var(b_1)+E[b_1]^2] = S_{xx}[\frac{\sigma^2}{S_{xx}}+E[b_1]^2]=S_{xx}[\frac{\sigma^2}{S_{xx}}+\beta_1^2]\Rightarrow
+$$
+$$
+\sigma^2 + \beta_1^2S_{xx} = E[MS_{R}]
+$$
+\quad\quad\ The property $MS_R \ge MS_{res}$ will always hold since $\sigma^2 \ge \sigma^2 + \beta_1^2S_{xx}$, where the smallest value we can have for $\beta_1^2$ is $0$, which in that case $\sigma^2 = \sigma^2 + 0^2S_{xx}$. Otherwise the value of $\sigma^2 + \beta_1^2S_{xx}$ will always be greater than just $\sigma^2$
+
+7. **(Optional)** Obtain the maximum likelihood estimator for $\beta_0$, $\beta_1$ and $\sigma^2$.
+
+
+
+
+# Statistical Computing and Data Analysis
+
+Please perform a data analysis using $\texttt{R}$ or your preferred language. **Any results should be generated by computer outputs, and your work should be done entirely by your computer**. **Handwriting is not allowed**. **Attach your code at the end of your homework PDF file**.
+
+The data set `mpg.csv` presents data on the gasoline mileage performance of 32 different automobiles. (Table B.3 in the textbook)
+
+To import the data set into your R session, use `read.csv()` like
+
+```{r, eval=FALSE}
+data_name_you_like <- read.csv("mpg.csv")
+```
+
+Once you load the data set, type its name on the R console. The data should be a data frame with 32 rows and 12 columns that looks like
+```{r, echo=FALSE}
+mpg <- read.csv("mpg.csv")
+head(mpg)
+```
+
+If this is what you get, you are good to start!
+
+1. Fit a simple linear regression model relating gasoline mileage $y$ (miles per gallon) to engine displacement $x_1$ (cubic inches). Explain your coefficients. Any potential concern?
+
+\quad\quad\ **Solution: **
+
+```{r}
+reg_fit_mpg_disp <- lm(formula = y~x1, data = mpg)
+reg_fit_mpg_disp
+```
+There is a negative linear relationship between mpg and engine displacement. Therefore, vehicles that have a higher engine displacement will do less mileage per gallon.
+
+2. Provide the $95\%$ CI for $\beta_0$, $\beta_1$ and $\sigma^2$.
+
+\quad\quad\ **Solution: **
+
+```{r}
+#confidence interval for \beta_0 and \beta_1
+confint(reg_fit_mpg_disp, level = 0.95)
+
+#confidence interval for \sigma^2
+alpha <- 0.95
+SS_res <-(sum(reg_fit_mpg_disp$residuals^2))
+lower_bd <- SS_res / qchisq(alpha / 2, df = reg_fit_mpg_disp$df, lower.tail = FALSE)
+upper_bd <- SS_res / qchisq(alpha / 2, df = reg_fit_mpg_disp$df, lower.tail = TRUE)
+
+
+cat("Lower bound: ",lower_bd,'\n')
+cat("Upper bound: ",upper_bd)
+```
+
+
+3. With $\alpha = 0.05$, test if $\beta_1$ is significantly different from 0. Provide procedure and steps, for example, $H_0$ and $H_1$, the test statistic or $p$-value, and decision rule.
+
+\quad\quad\ **Solution: **
+
+```{r}
+(sum_reg_fit<-summary(reg_fit_mpg_disp))
+```
+\quad\quad\ As we can see, the $p$-value for $\beta_1$ is $3.74^{-11}$, which is $0$. Therefore we need to reject $H_0: \beta_1 = 0$, since there is enough evidence at $\alpha = 0.05$ that $\beta_1 \ne 0$
+
+4. Construct the ANOVA table and test for significance of regression.
+
+\quad\quad\ **Solution: **
+
+```{r}
+anova(reg_fit_mpg_disp)
+```
+
+
+5. What percent of the total variability in gasoline mileage is accounted for by the linear relationship with engine displacement?
+
+\quad\quad\ **Solution: **
+
+```{r}
+sum_reg_fit$r.squared
+```
+\quad\quad\ We can see that the multiple $R^2$ is equal to $0.7723$, which means that $77.23\%$ of the variability in mpg is explained by engine displacement
+
+6. Find a $95\%$ CI on the mean gasoline mileage if the engine displacement is 275 in$^3$ engine.
+
+\quad\quad\ **Solution: **
+
+```{r}
+predict(reg_fit_mpg_disp, newdata = data.frame(x1= 275), interval = "confidence", level = 0.95)
+```
+
+
+7. Suppose that we wish to predict the gasoline mileage obtained from a car with a 275 in$^3$ engine. Give a point estimate of mileage. Find a 95% prediction interval (PI) on the mileage. Compare the PI with the CI in 6. Explain the difference between them. Which one is wider, and why?
+
+\quad\quad\ **Solution: **
+
+```{r}
+#the prediction for that specific point
+predict(reg_fit_mpg_disp, newdata = data.frame(x1= 275))
+
+#the prediction interval for that estimation
+predict(reg_fit_mpg_disp, newdata = data.frame(x1= 275), interval = "predict", level = 0.95)
+```
+\quad\quad\ The prediction interval is wider, by a lot, since it includes the uncertainty about $b_0$, $b_1$, as well as the $y_0$ and $\epsilon$, which are accounted for with the confidence interval. 
+
+8. Plot data $\{(x_{1i}, y_i)\}_{i=1}^{32}$, the fitted regression line, CI for $\mu$ and PI for $y$ in one figure. Add appropriate labels of axes, title, and legend. [*Hint:* Create a sequence of values of $x$, and obtain CI and PI for each value of $x$. Use `legend()` to add legends to a plot.]
+
+\quad\quad\ **Solution: **
+
+```{r}
+plot(mpg$x1, mpg$y, pch=20, las =1 ,cex = 1,
+     xlab = "Engine displacement (cubic inches)", ylab = "MPG",
+     main = "MPG vs. Engine Displacement (cubic inches)")
+abline(reg_fit_mpg_disp,col="navy", lwd=3)
+
+#confidence interval
+conf_x1<- seq(min(mpg$x1),max(mpg$x1), by=0.5)
+conf_int<- predict(reg_fit_mpg_disp, newdata=data.frame(x1=conf_x1), interval="confidence",
+                         level = 0.95)
+lines(conf_x1, conf_int[,2], col="blue", lty=2)
+lines(conf_x1, conf_int[,3], col="blue", lty=2)
+#predict Interval
+pred_x1<- seq(min(mpg$x1),max(mpg$x1), by=0.5)
+conf_int<- predict(reg_fit_mpg_disp, newdata=data.frame(x1=pred_x1), interval="predict", level = 0.95)
+lines(conf_x1, conf_int[,2], col="red", lty=2)
+lines(conf_x1, conf_int[,3], col="red", lty=2)
+
+#add legends
+legend("topright", legend=c("Predict Invervals Line", "Confidence Interval Lines", "Regression Line"),
+       col=c("red", "blue", "navy"), lty=c(2,2,1), cex=0.8)
+```
+
+
+9. Use the data and your fitted result to verify that
+    + (a) $\scriptstyle \sum_{i=1}^{32}(y_i - \hat{y}_i) = \sum_{i=1}^ne_i = 0$
+    + (b) $\scriptstyle  \sum_{i=1}^{32}y_i = \sum_{i=1}^{32}\hat{y}_i$
+    
+    + (c) The LS regression line passes through the centroid $(\overline{x}, \overline{y})$
+    + (d) $\scriptstyle \sum_{i=1}^{32}x_ie_i = 0$ (may not be exactly but numerically 0)
+    + (e) $\scriptstyle  \sum_{i=1}^{32}\hat{y}_ie_i = 0$ (may not be exactly but numerically 0)
+
+\quad\quad\ **Solution**
+
+\quad\quad\ (a)
+```{r}
+sum(mpg$y - reg_fit_mpg_disp$fitted.values)
+```
+\quad\quad\ which is numerically 0
+
+\quad\quad\ (b)
+```{r}
+sum(mpg$y)
+sum(reg_fit_mpg_disp$fitted.values)
+```
+\quad\quad\ which is the same.
+
+\quad\quad\ (c)
+```{r}
+mean(mpg$x1)
+mean(mpg$y)
+#so we plug into the equation that we got for that line
+# y =   33.72268 - 0.04736\beta_1
+y =  33.72268 - 0.04736*mean(mpg$x1)
+y
+```
+\quad\quad\ which shows that when we use $\bar{x}$ as the input for our fitted line, we get the same output as $\bar{x}$
+
+\quad\quad\ (d) since $\sum_{i-1}^{32}\epsilon_i = \sum_{i-1}^{32}(y_i - \hat{y}_i)$
+```{r}
+sum(mpg$x1 * (mpg$y - reg_fit_mpg_disp$fitted.values))
+```
+\quad\quad\ which is numerically 0
+
+\quad\quad\ (e)
+
+```{r}
+sum(reg_fit_mpg_disp$fitted.values * (mpg$y - reg_fit_mpg_disp$fitted.values))
+```
+\quad\quad\ which is numerically 0
+
+
